@@ -1,24 +1,29 @@
 #include <jni.h>
 #include <string>
-#include "zaudio/AudioFile.h"
+//#include "zaudio/AudioFile.h"
 #include "zdebug/debug.h"
+#include "test/clazz_test.h"
 
 using namespace std;
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_audioexample_MainActivity_stringFromJNI(
-        JNIEnv* env,
+extern "C" {
+JNIEXPORT jstring JNICALL Java_com_example_audioexample_MainActivity_stringFromJNI(
+        JNIEnv *env,
         jobject /* this */) {
     string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
 }
 
+JNIEXPORT jstring JNICALL Java_com_example_audioexample_MainActivity_audioFileTest(
+        JNIEnv *env,
+        jobject,
+        jstring filePath) {
+    ClazzTest<double> test;
+    const char* path = env->GetStringUTFChars(filePath,NULL);
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_audioexample_MainActivity_audioFileTest(
-        JNIEnv* env,
-        jobject /* this */) {
+    test.readAudio(path);
 
-    string hello = "Java_com_example_audioexample_MainActivity_audioFile";
-    return env->NewStringUTF(hello.c_str());
+    return env->NewStringUTF(path);
+}
+
 }

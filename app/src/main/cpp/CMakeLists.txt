@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
+# You can define multiparies, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
 add_library( # Sets the name of the library.
@@ -20,8 +20,8 @@ add_library( # Sets the name of the library.
         kiss_fft.c
         kiss_fftr.c
         kiss-fft-lib.cpp
-        zaudio/AudioFile.cpp
-        zaudio/AudioFile.h
+        test/clazz_test.cpp
+        zaudio/MainAudioFile.h
         native-lib.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a

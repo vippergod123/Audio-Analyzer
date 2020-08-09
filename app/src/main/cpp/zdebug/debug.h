@@ -11,7 +11,7 @@
 #if !defined(NDEBUG)
 
 #if !defined(LOG_TAG)
-#define LOG_TAG "AUDIO_EXAMPLE_JNI"
+#define LOG_TAG "NATIVE_CODE"
 
 #endif
 

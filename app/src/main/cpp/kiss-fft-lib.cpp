@@ -9,15 +9,15 @@ extern "C" {
 
 JNIEXPORT jdoubleArray JNICALL
 Java_com_example_audioexample_FFT_dofft(JNIEnv *env, jobject,
-                                                                jdoubleArray inArray,
-                                                                jint is_inverse) {
+                                        jdoubleArray inArray,
+                                        jint is_inverse) {
 
     if (inArray == NULL) {
         __android_log_write(ANDROID_LOG_ERROR, TAG, "inArray has nullptr.");
         return NULL;
     }
 
-    int n = env->GetArrayLength(inArray)/2;
+    int n = env->GetArrayLength(inArray) / 2;
 
     if (n < 1) {
         __android_log_write(ANDROID_LOG_ERROR, TAG, "FFT array length < 1!");
@@ -28,10 +28,10 @@ Java_com_example_audioexample_FFT_dofft(JNIEnv *env, jobject,
 
     double *inValues = env->GetDoubleArrayElements(inArray, 0);
 
-    jdoubleArray outArray = env->NewDoubleArray(n*2);
+    jdoubleArray outArray = env->NewDoubleArray(n * 2);
     double *outValues = env->GetDoubleArrayElements(outArray, 0);
 
-    kiss_fft(cfg, (kiss_fft_cpx*)inValues, (kiss_fft_cpx*)outValues);
+    kiss_fft(cfg, (kiss_fft_cpx *) inValues, (kiss_fft_cpx *) outValues);
 
     env->ReleaseDoubleArrayElements(outArray, outValues, 0);
     env->ReleaseDoubleArrayElements(inArray, inValues, 0);
@@ -44,8 +44,8 @@ Java_com_example_audioexample_FFT_dofft(JNIEnv *env, jobject,
 
 JNIEXPORT jobjectArray JNICALL
 Java_com_example_audioexample_FFT_dofftdouble(JNIEnv *env, jobject,
-                                                                      jdoubleArray data,
-                                                                      jint is_inverse) {
+                                              jdoubleArray data,
+                                              jint is_inverse) {
 
     jclass complex = env->FindClass("org/apache/commons/math3/complex/Complex");
 
@@ -97,7 +97,7 @@ Java_com_example_audioexample_FFT_dofftdouble(JNIEnv *env, jobject,
 
 JNIEXPORT jobjectArray JNICALL
 Java_com_example_audioexample_FFT_dofftr(JNIEnv *env, jobject,
-                                                                 jdoubleArray data) {
+                                         jdoubleArray data) {
 
     jclass complex = env->FindClass("org/apache/commons/math3/complex/Complex");
 
@@ -145,7 +145,7 @@ Java_com_example_audioexample_FFT_dofftr(JNIEnv *env, jobject,
 
 JNIEXPORT jdoubleArray JNICALL
 Java_com_example_audioexample_FFT_dofftri(JNIEnv *env, jobject,
-                                                                  jobjectArray data) {
+                                          jobjectArray data) {
 
     jclass complex = env->FindClass("org/apache/commons/math3/complex/Complex");
     jmethodID getImaginary = env->GetMethodID(complex, "getImaginary", "()D");
