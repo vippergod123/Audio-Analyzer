@@ -2,24 +2,35 @@ package com.example.audioexample;
 
 import android.Manifest;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.audioexample.utils.Constant;
+import com.example.audioexample.utils.ZAsyncTask;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 
    // Used to load the 'native-lib' library on application startup.
@@ -30,12 +41,16 @@ public class MainActivity extends AppCompatActivity {
    private static final int AUDIO_FILE_REQUEST_CODE = 0x0001;
    public static final String TAG = "JAVA_CODE";
    MediaPlayer mediaPlayer;
+   Handler handler = new Handler();
+   String downloadPath = Environment.getExternalStorageDirectory().getPath() + "/Download";
+   String musicPath = downloadPath + "/" + Constant.localWaveLowFile;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
-      ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+      ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+      setOnClickListenerForView();
    }
 
    @Override
@@ -52,53 +67,59 @@ public class MainActivity extends AppCompatActivity {
       }
    }
 
-   public void onClickPlayAudio(View view) {
-//      startChooseAudioFile();
+   @Override
+   public void onClick(View view) {
+      int id= view.getId();
+      switch (id) {
 
+         case R.id.silent_wav_text_view:
+            selectAudio( Constant.localWaveSilentFile);
+            break;
+         case R.id.wav_text_view:
+            selectAudio( Constant.localWaveLowFile);
+            break;
+         case R.id.load_file_button:
+            onClickPlayAudio();
+            break;
+         case R.id.read_buffer_stream_button:
+            onClickReadBuffer();
+            break;
+      }
+   }
 
-      Handler handler = new Handler();
+   private void onClickPlayAudio() {
+
 
       final Runnable r = new Runnable() {
          public void run() {
-            String path = Environment.getExternalStorageDirectory().getPath();
-            String filePath = path + "/Download/silent.wav";
-            audioFileTest(filePath);
+            audioFileTest(musicPath);
          }
       };
 
       handler.post(r);
    }
 
-   private void handleAudioFile() {
-      try {
-         mediaPlayer = new MediaPlayer();
-         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-         mediaPlayer.setDataSource(Constant.waveSoldOutUrl);
-         mediaPlayer.prepareAsync();
-         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+   private void onClickReadBuffer() {
 
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-               mediaPlayer.start();
+
+      final Runnable r = new Runnable() {
+         @RequiresApi(api = Build.VERSION_CODES.O)
+         public void run() {
+            try {
+               Path fileLocation = Paths.get(musicPath);
+               byte[] data = Files.readAllBytes(fileLocation);
+               convertByteArrayToUnsignChar(data);
+            } catch (IOException e) {
+               e.printStackTrace();
             }
-         });
-
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
+         }
+      };
+      new ZAsyncTask().execute(r);
    }
 
-   private void handleAudioFileInStorage() {
-      Log.e("DUY", Environment.getExternalStorageDirectory().getPath());
-//    MediaPlayer mp = MediaPlayer.create(this, Uri.parse(Environment.getExternalStorageDirectory().getPath()+ "/Download/wave.wav"));
-//    mp.start();
-   }
-
-   public void startChooseAudioFile() {
-      Intent intent_upload = new Intent();
-      intent_upload.setType("audio/*");
-      intent_upload.setAction(Intent.ACTION_GET_CONTENT);
-      startActivityForResult(intent_upload, AUDIO_FILE_REQUEST_CODE);
+   private void selectAudio(String fileName) {
+      musicPath = downloadPath + "/" + fileName;
+      Toast.makeText(this,"File selected: " +fileName, Toast.LENGTH_SHORT).show();
    }
 
    /**
@@ -109,8 +130,17 @@ public class MainActivity extends AppCompatActivity {
 
    public native String audioFileTest(String filePath);
 
+   public native String convertByteArrayToUnsignChar(byte[] dataArray);
 
+
+   private void setOnClickListenerForView() {
+      findViewById(R.id.silent_wav_text_view).setOnClickListener(this);
+      findViewById(R.id.wav_text_view).setOnClickListener(this);
+      findViewById(R.id.load_file_button).setOnClickListener(this);
+      findViewById(R.id.read_buffer_stream_button).setOnClickListener(this);
+   }
 }
+
 
 //  void testFFTLib() {
 //    FFT kissFastFourierTransformer = new FFT();

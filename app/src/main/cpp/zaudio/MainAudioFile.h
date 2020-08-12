@@ -537,6 +537,7 @@ bool AudioFile<T>::decodeWaveFile(std::vector<uint8_t> &fileData) {
     samples.resize(numChannels);
 
     for (int i = 0; i < numSamples; i++) {
+
         for (int channel = 0; channel < numChannels; channel++) {
             int sampleIndex =
                     samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;

@@ -7,16 +7,60 @@
     tools:context=".MainActivity">
 
     <Button
+        android:id="@+id/read_buffer_stream_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Read Buffer Stream"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.858"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.565" />
 
-        android:onClick="onClickPlayAudio"
-        android:id="@+id/button"
+    <Button
+
+        android:id="@+id/load_file_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Load File"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.158"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.565" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="104dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="148dp"
+        android:layout_marginEnd="8dp"
+        android:text="Select Audio: "
+        app:layout_constraintEnd_toStartOf="@+id/silent_wav_text_view"
+        app:layout_constraintHorizontal_bias="0.43"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/silent_wav_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="148dp"
+        android:layout_marginEnd="24dp"
+        android:text="Silent.wav"
+        app:layout_constraintEnd_toStartOf="@+id/wav_text_view"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/wav_text_view"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="148dp"
+        android:layout_marginEnd="84dp"
+        android:text="10mb.wav"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

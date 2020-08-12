@@ -26,4 +26,14 @@ JNIEXPORT jstring JNICALL Java_com_example_audioexample_MainActivity_audioFileTe
     return env->NewStringUTF(path);
 }
 
+JNIEXPORT jstring JNICALL Java_com_example_audioexample_MainActivity_convertByteArrayToUnsignChar(
+        JNIEnv *env,
+        jobject,
+        jbyteArray byteArray) {
+   ClazzTest<double> test;
+
+   test.convertByteArrayToUnsignedChar(env,byteArray);
+   return env->NewStringUTF("path");
+}
+
 }
