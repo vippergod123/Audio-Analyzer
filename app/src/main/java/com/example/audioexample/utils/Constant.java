@@ -6,5 +6,6 @@ public class Constant {
   public static String waveBirdSOundUrl = "https://www.all-birds.com/Sound/western%20bluebird.wav";
 
   public static String localWaveLowFile = "low.wav";
+  public static String localMusicFile = "music.wav";
   public static String localWaveSilentFile = "silent.wav";
 }

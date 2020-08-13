@@ -2,6 +2,9 @@ package com.example.audioexample;
 
 import android.Manifest;
 import android.content.Intent;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -29,6 +32,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -69,22 +73,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
    @Override
    public void onClick(View view) {
-      int id= view.getId();
+      int id = view.getId();
       switch (id) {
 
          case R.id.silent_wav_text_view:
-            selectAudio( Constant.localWaveSilentFile);
+            selectAudio(Constant.localWaveSilentFile);
             break;
          case R.id.wav_text_view:
-            selectAudio( Constant.localWaveLowFile);
+            selectAudio(Constant.localWaveLowFile);
+            break;
+         case R.id.music_wav_text_view:
+            selectAudio(Constant.localMusicFile);
             break;
          case R.id.load_file_button:
             onClickPlayAudio();
+            break;
+         case R.id.custom_sound_button:
+            onClickCustomSound();
             break;
          case R.id.read_buffer_stream_button:
             onClickReadBuffer();
             break;
       }
+   }
+
+
+
+   private void onClickCustomSound() {
+      int i = 0;
+      byte[] music = null;
+      InputStream is = getResources().openRawResource(R.raw.silent);
+
+      int bufsize = AudioTrack.getMinBufferSize(
+            4096,
+            AudioFormat.CHANNEL_OUT_STEREO,
+            AudioFormat.ENCODING_PCM_16BIT
+      );
+
+      AudioTrack at = new AudioTrack(AudioManager.STREAM_MUSIC, 44100,
+            AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT,
+            bufsize, AudioTrack.MODE_STREAM);
+
+      try{
+         music = new byte[4096];
+         at.play();
+
+         while((i = is.read(music)) != -1)
+            at.write(music, 0, i);
+
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+
+      at.stop();
+      at.release();
    }
 
    private void onClickPlayAudio() {
@@ -119,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
    private void selectAudio(String fileName) {
       musicPath = downloadPath + "/" + fileName;
-      Toast.makeText(this,"File selected: " +fileName, Toast.LENGTH_SHORT).show();
+      Toast.makeText(this, "File selected: " + fileName, Toast.LENGTH_SHORT).show();
    }
 
    /**
@@ -136,8 +178,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
    private void setOnClickListenerForView() {
       findViewById(R.id.silent_wav_text_view).setOnClickListener(this);
       findViewById(R.id.wav_text_view).setOnClickListener(this);
+      findViewById(R.id.music_wav_text_view).setOnClickListener(this);
+
       findViewById(R.id.load_file_button).setOnClickListener(this);
       findViewById(R.id.read_buffer_stream_button).setOnClickListener(this);
+      findViewById(R.id.custom_sound_button).setOnClickListener(this);
    }
 }
 

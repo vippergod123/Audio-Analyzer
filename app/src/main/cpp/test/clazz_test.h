@@ -10,6 +10,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <math.h>
 #include "../zdebug/debug.h"
 #include "../zaudio/MainAudioFile.h"
 
@@ -22,13 +23,29 @@ public:
        AudioFile<double> audioFile;
        audioFile.load(filePath);
        audioFile.printSummary();
-       vector<vector<T>> buffer = audioFile.samples;
+       vector<vector<T>> fileStream = audioFile.samples;
 
-//        for (int i = 0; i < buffer.size(); ++i) {
-//            for (int j = 0; j < buffer[i].size(); ++j) {
-//                LOG_D("buffer[%d][%d]: %f", i, j, buffer[i][j]);
-//            }
-//        }
+       vector<T> firstChannel = fileStream[0];
+       int bufferSize = audioFile.getSampleRate() * 3  ; //get buffer N second of audio
+//       int startIndex = 0;
+//       int count =0 ;
+//       while ( startIndex < firstChannel.size()) {
+//          startIndex+= bufferSize;
+//          count ++;
+//          LOG_D("%d", count);
+//       }
+
+       vector<vector<T>> arrayBuffer = splitBufferIntoArrayBuffer(firstChannel, bufferSize);
+       for (int i = 0; i < arrayBuffer.size(); ++i) {
+
+          LOG_D("arrayBuffer[%d] => %f", i, rmsPcmRawValue(arrayBuffer[i]));
+       }
+
+//       logBuffer(arrayBuffer.back());
+//
+//       for (int sampleIndex = 0; sampleIndex < lastBuffer.size(); ++sampleIndex) {
+//
+//       }
     };
 
     void convertByteArrayToUnsignedChar(JNIEnv *env, jbyteArray byteArray) {
@@ -38,8 +55,69 @@ public:
 
        env->GetByteArrayRegion(byteArray, 0, len, reinterpret_cast<jbyte *>(buf));
        for (int i = 0; i < len; ++i) {
-          LOG_D("%d hex: %02x- int: %d - char: %c",i,buf[i], buf[i], buf[i]);
+          LOG_D("%d hex: %02x- int: %d - char: %c", i, buf[i], buf[i], buf[i]);
        }
+    }
+
+    vector<vector<T>> splitBufferIntoArrayBuffer(vector<T> buffer, int smallBufferSize) {
+       vector<vector<T>> arraySplitBuffer;
+       int bufferSize = buffer.size();
+       int startIndex = 0;
+       while (startIndex < bufferSize) {
+          vector<T> tempBuffer;
+
+          if (bufferSize - startIndex < smallBufferSize) {
+             smallBufferSize = bufferSize - startIndex;
+          }
+
+          tempBuffer.resize(smallBufferSize);
+          for (int sampleIndex = 0; sampleIndex < smallBufferSize; ++sampleIndex) {
+             tempBuffer.push_back(buffer[startIndex + sampleIndex]);
+          }
+
+          arraySplitBuffer.push_back(tempBuffer);
+
+          startIndex += smallBufferSize;
+       }
+
+       return arraySplitBuffer;
+    }
+
+    double ratingSilentOfBuffer(vector<T> buffer) {
+       T sum = 0;
+//       for (var i = 0; i < _buffer.length; i = i + 2)
+//       {
+//          double sample = BitConverter.ToInt16(_buffer, i) / 32768.0;
+//          sum += (sample * sample);
+//       }
+//       double rms = Math.Sqrt(sum / (_buffer.length / 2));
+//       var decibel = 20 * Math.Log10(rms);
+       int count = 0;
+       for (int sampleIndex = 0; sampleIndex < buffer.size(); ++sampleIndex) {
+          T sample = buffer[sampleIndex];
+          sum += (sample * sample);
+       }
+       const float kMaxSquaredLevel = 32768 * 32768;
+       T rms = sqrt(sum / (buffer.size()));
+       T decibel = 20 * log10(rms);
+//
+       return decibel;
+    }
+
+    void logBuffer(vector<T> buffer) {
+       for (int i = 0; i < buffer.size(); ++i) {
+          LOG_D("buffer[%d]: %f", i, buffer[i]);
+       }
+    }
+
+    T rmsPcmRawValue(vector<T> buffer) {
+       T sum = 0;
+       for (int sampleIndex = 0; sampleIndex < buffer.size(); ++sampleIndex) {
+          T sample = buffer[sampleIndex];
+          sum += (sample * sample);
+       }
+       T rms = sqrt(sum / (buffer.size()));
+       return rms;
     }
 };
 
