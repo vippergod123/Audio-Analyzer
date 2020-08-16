@@ -40,6 +40,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.mysugr.MPAndroidChart:MPAndroidChart:3.1.0-mysugr-1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

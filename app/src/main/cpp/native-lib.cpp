@@ -36,4 +36,20 @@ JNIEXPORT jstring JNICALL Java_com_example_audioexample_MainActivity_convertByte
    return env->NewStringUTF("path");
 }
 
+JNIEXPORT jdoubleArray JNICALL Java_com_example_audioexample_MainActivity_getPcmAudioValue(
+        JNIEnv *env,
+        jobject,
+        jstring filePath,
+        jint splitBy) {
+    ClazzTest<double> test;
+    const char* path = env->GetStringUTFChars(filePath,NULL);
+
+    vector<double> arrayPcmValue = test.getPcmValueFromFile(path, splitBy);
+    jdoubleArray resultArray = env->NewDoubleArray(arrayPcmValue.size());
+    if (NULL == resultArray) return NULL;
+
+    env->SetDoubleArrayRegion(resultArray, 0, arrayPcmValue.size(), &arrayPcmValue[0]);
+    return resultArray;
+}
+
 }

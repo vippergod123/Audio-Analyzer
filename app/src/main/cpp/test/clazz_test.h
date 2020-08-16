@@ -48,6 +48,24 @@ public:
 //       }
     };
 
+    vector<T> getPcmValueFromFile(const char *filePath, jint splitBy) {
+        AudioFile<double> audioFile;
+        audioFile.load(filePath);
+        audioFile.printSummary();
+        vector<vector<T>> fileStream = audioFile.samples;
+
+        vector<T> firstChannel = fileStream[0];
+        int bufferSize = audioFile.getSampleRate() * splitBy  ; //split buffer by N second
+        vector<T> result;
+        vector<vector<T>> arrayBuffer = splitBufferIntoArrayBuffer(firstChannel, bufferSize);
+        for (int i = 0; i < arrayBuffer.size(); ++i) {
+            T value = rmsPcmRawValue(arrayBuffer[i]);
+            result.push_back(value);
+        }
+
+        return result;
+    }
+
     void convertByteArrayToUnsignedChar(JNIEnv *env, jbyteArray byteArray) {
        int len = env->GetArrayLength(byteArray);
 
